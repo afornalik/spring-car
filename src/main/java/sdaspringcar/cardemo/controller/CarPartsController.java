@@ -11,8 +11,11 @@ import sdaspringcar.cardemo.servic.CarPartsService;
 @RequestMapping("/CarParts")
 public class CarPartsController {
 
-    @Autowired
-    CarPartsService carPartsService;
+    private final CarPartsService carPartsService;
+
+    public CarPartsController(CarPartsService carPartsService) {
+        this.carPartsService = carPartsService;
+    }
 
 
     @RequestMapping(value = "/add",method = RequestMethod.GET,produces = "application/json")

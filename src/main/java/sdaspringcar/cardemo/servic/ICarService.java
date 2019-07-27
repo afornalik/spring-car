@@ -1,13 +1,14 @@
 package sdaspringcar.cardemo.servic;
 
-import org.springframework.stereotype.Service;
-import sdaspringcar.cardemo.entity.CarParts;
+import sdaspringcar.cardemo.entity.Car;
 
-import java.math.BigDecimal;
-import java.util.List;
+import java.util.Optional;
 
 
 public interface ICarService {
 
+    Car createCar(Car car);
+
+    Optional<Car> getSingleCar(Long id);
 
 }

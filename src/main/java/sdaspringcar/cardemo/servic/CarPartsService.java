@@ -13,20 +13,30 @@ import java.util.List;
 @Service
 public class CarPartsService implements ICarPartsService {
 
-    @Autowired
+    final
     ICarPartsRepository carPartsRepository;
+
+    @Autowired
+    public CarPartsService(ICarPartsRepository carPartsRepository) {
+        this.carPartsRepository = carPartsRepository;
+    }
 
     @Override
     public List<CarParts> showPartsThatCostMoreThan(BigDecimal bigDecimal) {
-        return null;
+        return carPartsRepository.findByPriceGreaterThan(bigDecimal);
     }
 
     @Override
     public CarParts createNewPart(String name, String price) {
-        if(name!=null && price!=null){
+        if (name != null && price != null) {
             CarParts carPartsToAdd = new CarParts();
             carPartsToAdd.setName(name);
-            carPartsToAdd.setPrice(tryParsePrice(price));
+            try {
+                carPartsToAdd.setPrice(tryParsePrice(price));
+            } catch (IncorrectPriceParseException e) {
+                e.printStackTrace();
+                return null;
+            }
             carPartsRepository.save(carPartsToAdd);
             return carPartsToAdd;
         }
@@ -36,10 +46,9 @@ public class CarPartsService implements ICarPartsService {
     private BigDecimal tryParsePrice(String price) throws IncorrectPriceParseException {
         try {
             return new BigDecimal(price);
-        } catch ( Exception e) {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
-            throw new IncorrectPriceParseException();
+            throw new IncorrectPriceParseException("Incorrect price.");
         }
-        return null;
     }
 }

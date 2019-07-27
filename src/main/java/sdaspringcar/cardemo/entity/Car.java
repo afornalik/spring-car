@@ -20,8 +20,8 @@ public class Car {
     @Column(name="name",nullable = false)
     private String name;
 
-    @Column(name = "model",nullable = false)
-    @Enumerated(value = EnumType.STRING)
+    @Column(name = "model",nullable = false,columnDefinition = "enum (  'COMBI', 'HATCHBACK', 'SEDAN','SUV')")
+    @Enumerated(EnumType.STRING)
     private CarModel carModel;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "car")
