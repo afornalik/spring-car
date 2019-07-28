@@ -38,3 +38,12 @@ public class CarController {
         }
     }
 }
+
+/*  {
+          "idCarParts": 3,
+          "price": 4500.00,
+          "name": "Window",
+          "car": null
+          }*/
+
+

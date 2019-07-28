@@ -10,6 +10,7 @@ import java.util.Optional;
 
 
 @Service
+@Transactional
 public class CarService implements ICarService {
 
 
@@ -23,7 +24,6 @@ public class CarService implements ICarService {
 
 
     @Override
-    @Transactional
     public Car createCar(Car car) {
         return carRepository.save(car);
     }

@@ -3,27 +3,48 @@ package sdaspringcar.cardemo.servic;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import sdaspringcar.cardemo.entity.Car;
 import sdaspringcar.cardemo.entity.CarParts;
+
 import sdaspringcar.cardemo.exception.IncorrectPriceParseException;
 import sdaspringcar.cardemo.repository.ICarPartsRepository;
+import sdaspringcar.cardemo.repository.ICarRepository;
+import sdaspringcar.cardemo.servic.utils.ComparisonEnum;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@Transactional
 public class CarPartsService implements ICarPartsService {
 
-    final
-    ICarPartsRepository carPartsRepository;
+
+    private final ICarPartsRepository carPartsRepository;
+    private final ICarRepository carRepository;
 
     @Autowired
-    public CarPartsService(ICarPartsRepository carPartsRepository) {
+    public CarPartsService(ICarPartsRepository carPartsRepository, ICarRepository carRepository) {
         this.carPartsRepository = carPartsRepository;
+        this.carRepository = carRepository;
     }
 
+
     @Override
-    public List<CarParts> showPartsThatCostMoreThan(BigDecimal bigDecimal) {
-        return carPartsRepository.findByPriceGreaterThan(bigDecimal);
+    public List<CarParts> showPartsThatCost(BigDecimal price, ComparisonEnum comparisonEnum) {
+        switch (comparisonEnum) {
+            case LOWER: {
+                return carPartsRepository.findByPriceIsLessThan(price);
+            }
+            case GREATER: {
+                return carPartsRepository.findByPriceGreaterThan(price);
+            }
+            case EQUAL: {
+                return carPartsRepository.findByPriceEquals(price);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -34,7 +55,6 @@ public class CarPartsService implements ICarPartsService {
             try {
                 carPartsToAdd.setPrice(tryParsePrice(price));
             } catch (IncorrectPriceParseException e) {
-                e.printStackTrace();
                 return null;
             }
             carPartsRepository.save(carPartsToAdd);
@@ -43,11 +63,30 @@ public class CarPartsService implements ICarPartsService {
         return null;
     }
 
+    @Override
+    public CarParts createNewPart(CarParts carParts) {
+        return carPartsRepository.save(carParts);
+    }
+
+    @Override
+    public Boolean assignCarPartsToCar(Long partId,Long carId) {
+
+        Optional<Car> optionalCar = carRepository.findById(carId);
+        Optional<CarParts> optionalCarParts = carPartsRepository.findById(partId);
+        if(optionalCar.isPresent() && optionalCarParts.isPresent()){
+            optionalCarParts.get().setCar(optionalCar.get());
+            carPartsRepository.save(optionalCarParts.get());
+            return true;
+        }
+        return false;
+    }
+
+
+
     private BigDecimal tryParsePrice(String price) throws IncorrectPriceParseException {
         try {
             return new BigDecimal(price);
         } catch (NumberFormatException e) {
-            e.printStackTrace();
             throw new IncorrectPriceParseException("Incorrect price.");
         }
     }

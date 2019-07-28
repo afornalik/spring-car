@@ -10,5 +10,10 @@ import java.util.List;
 @Repository
 public interface ICarPartsRepository extends JpaRepository<CarParts, Long> {
 
+
     List<CarParts> findByPriceGreaterThan(BigDecimal price);
+
+    List<CarParts> findByPriceIsLessThan(BigDecimal price);
+
+    List<CarParts> findByPriceEquals(BigDecimal price);
 }

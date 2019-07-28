@@ -21,7 +21,7 @@ public class CarParts {
     private String name;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "car")
     private Car car;
 
